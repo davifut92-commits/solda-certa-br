@@ -30,11 +30,10 @@ const tOnly = iso => new Intl.DateTimeFormat('pt-BR',{hour:'2-digit',minute:'2-d
 const todayISO = () => new Intl.DateTimeFormat('en-CA',{timeZone:TZ}).format(new Date());
 const uuidShort = () => crypto.randomUUID().replaceAll('-','').slice(0,8).toUpperCase();
 const protocol = prefix => `${prefix}-${todayISO().replaceAll('-','').slice(2)}-${uuidShort().slice(0,6)}`;
-const BASE_PATH = location.hostname.endsWith('github.io') ? '/solda-certa-br' : '';
-const path = () => { const raw = location.pathname || '/'; return BASE_PATH && raw.startsWith(BASE_PATH) ? (raw.slice(BASE_PATH.length) || '/') : raw; };
-const params = () => new URLSearchParams(location.search);
+const path = () => location.pathname || '/';
+const params = () => { if(IS_GITHUB_PAGES){ const h=hashRoute(); const i=h.indexOf('?'); return new URLSearchParams(i>=0?h.slice(i+1):''); } return new URLSearchParams(location.search); };
 
-function go(to){ history.pushState({},'',BASE_PATH+to); render(); window.scrollTo({top:0,behavior:'smooth'}); }
+function go(to){ history.pushState({},'',to); render(); window.scrollTo({top:0,behavior:'smooth'}); }
 window.addEventListener('popstate',render);
 
 function statusLabel(s){
@@ -225,7 +224,7 @@ async function handleAuth(e){
     const next=e.currentTarget.dataset.next||'/minha-conta'; go(next);
   }catch(err){msg.innerHTML=`<div class="notice bad">${esc(err.message)}</div>`;}
 }
-async function handleForgot(){const email=prompt('Digite o e-mail da sua conta:');if(!email)return;const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:location.origin+BASE_PATH+'/redefinir-senha'});alert(error?error.message:'Se o e-mail estiver cadastrado, você receberá as instruções de redefinição.');}
+async function handleForgot(){const email=prompt('Digite o e-mail da sua conta:');if(!email)return;const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:`${location.origin}/redefinir-senha`});alert(error?error.message:'Se o e-mail estiver cadastrado, você receberá as instruções de redefinição.');}
 async function handleReset(e){e.preventDefault();const p=String(new FormData(e.currentTarget).get('password'));const msg=document.getElementById('resetMsg');const {error}=await supabase.auth.updateUser({password:p});msg.innerHTML=error?`<div class="notice bad">${esc(error.message)}</div>`:'<div class="notice good">Senha atualizada. Você já pode continuar usando sua conta.</div>';}
 
 function previewFiles(e){const box=document.getElementById('filePreview');const files=[...e.target.files];box.innerHTML=files.map(f=>`<div class="file-pill"><span>${esc(f.name)}</span><span>${(f.size/1024/1024).toFixed(1)} MB</span></div>`).join('');}
