@@ -13,7 +13,7 @@ Aplicação web para Aldemir, prestador autônomo de serviços de solda.
 - Hold de 15 minutos e trava transacional contra dupla reserva
 - Área do cliente
 - Dashboard administrativa
-- Pix real propositalmente desativado; tabela de pagamentos preparada para etapa futura
+- Pix por QR Code estático do Aldemir; o cliente digita o valor combinado e a conferência do recebimento é manual
 
 ## Arquivos
 Aplicação estática: `index.html`, `styles.css`, `app.js` e `_redirects`.
